@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>CKD eGFR Calculator</title>
 
 <link rel="manifest" href="manifest.json">
@@ -11,57 +11,67 @@
 <style>
     body {
         font-family: Segoe UI, sans-serif;
-        background: #f5f5f5;
+        background: #f0f0f0;
         margin: 0;
         padding: 0;
     }
+
     .container {
-        max-width: 360px;
+        width: 94%;
+        max-width: 340px;
         margin: auto;
+        margin-top: 12px;
         background: white;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 10px;
-        box-shadow: 0 0 8px rgba(0,0,0,0.08);
+        padding: 14px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
     h2 {
         text-align: center;
-        margin-bottom: 12px;
-        font-size: 1.3em;
+        margin-bottom: 10px;
+        font-size: 1.2em;
     }
+
     label {
-        font-size: 1em;
-        margin-top: 6px;
+        font-size: 0.95em;
+        margin-top: 8px;
         display: block;
     }
+
     input {
         width: 100%;
-        padding: 8px;
+        padding: 10px;
         font-size: 1em;
         margin-top: 4px;
         border: 1px solid #ccc;
         border-radius: 6px;
     }
+
     button {
-        padding: 8px 14px;
+        padding: 10px 14px;
         font-size: 1em;
         margin: 6px;
         border: none;
         border-radius: 6px;
         cursor: pointer;
+        width: 45%;
     }
+
     .btn-primary {
         background: #0078d4;
         color: white;
     }
+
     .btn-secondary {
         background: #666;
         color: white;
     }
+
     #result {
-        margin-top: 10px;
-        padding: 10px;
-        background: #eef;
+        margin-top: 12px;
+        padding: 12px;
+        background: #eef3ff;
         border-radius: 6px;
         min-height: 50px;
         white-space: pre-line;
@@ -96,7 +106,6 @@
 </div>
 
 <script>
-// ---- CKD‑EPI 2021 Creatinine Equation ----
 function ckd_epi_2021_creatinine(serum_creat_umol_l, age, sex) {
     let scr_mg_dl = serum_creat_umol_l / 88.4;
 
@@ -114,16 +123,13 @@ function ckd_epi_2021_creatinine(serum_creat_umol_l, age, sex) {
     let min_scr_k = Math.min(scr_mg_dl / k, 1);
     let max_scr_k = Math.max(scr_mg_dl / k, 1);
 
-    let egfr = 142 *
+    return 142 *
         Math.pow(min_scr_k, alpha) *
         Math.pow(max_scr_k, -1.200) *
         Math.pow(0.9938, age) *
         sex_factor;
-
-    return egfr;
 }
 
-// ---- CKD Staging ----
 function ckd_stage_from_egfr(egfr) {
     if (egfr >= 90) return "Stage 1 (≥90; needs kidney damage evidence)";
     if (egfr >= 60) return "Stage 2 (60–89; needs kidney damage evidence)";
@@ -133,7 +139,6 @@ function ckd_stage_from_egfr(egfr) {
     return "Stage 5 (<15; kidney failure)";
 }
 
-// ---- Calculate ----
 function calculate() {
     let egfrInput = document.getElementById("egfr").value.trim();
     let creat = document.getElementById("creat").value.trim();
@@ -168,7 +173,6 @@ function calculate() {
     }
 }
 
-// ---- Reset ----
 function resetFields() {
     document.getElementById("egfr").value = "";
     document.getElementById("creat").value = "";
@@ -177,18 +181,6 @@ function resetFields() {
     document.getElementById("result").textContent = "";
 }
 
-// ---- Enter‑key navigation ----
-document.getElementById("creat").addEventListener("keydown", e => {
-    if (e.key === "Enter") document.getElementById("age").focus();
-});
-document.getElementById("age").addEventListener("keydown", e => {
-    if (e.key === "Enter") document.getElementById("sex").focus();
-});
-document.getElementById("sex").addEventListener("keydown", e => {
-    if (e.key === "Enter") calculate();
-});
-
-// ---- Register service worker ----
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
 }
